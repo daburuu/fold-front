@@ -12,11 +12,12 @@ import FoldRegister from './components/pages/Auth/Register.tsx';
 import FoldDashboard from './components/pages/Dashboard.tsx';
 import FoldTuto from './components/pages/Create/Tuto.tsx';
 import FoldForm from './components/pages/Create/Form.tsx';
+const FoldScanLogin = lazy(() => import('./components/pages/Scan/Login.tsx'));
 
 function App() {
   return (
     <div className="App h-[100vh] w-full">
-      <Suspense>
+      <Suspense fallback={<></>}>
         <Router>
           <Routes>
             {/* AUTH */}
@@ -29,6 +30,8 @@ function App() {
               {/* CREATION */}
               <Route element={<FoldTuto />} path="create-event"></Route>
               <Route element={<FoldForm />} path="form-create"></Route>
+              {/* SCAN */}
+              <Route element={<FoldScanLogin />} path="/scan-login"></Route>
           </Routes>
         </Router>
       </Suspense>

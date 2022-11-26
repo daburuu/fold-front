@@ -1,11 +1,35 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
 export default function Register({}){
     const [visibility, setVisibility] = useState(false);
+    const fullnameRef = useRef(null);
+    const usernameRef = useRef(null);
+    const passwordRef = useRef(null);
 
     function handleSubmit(event){
         event.preventDefault();
+        // @TODO: API CALL /register
+
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fullname: fullnameRef.current.value,
+                username: usernameRef.current.value,
+                password: passwordRef.current.value
+            })
+        })
+        .then(async (response) => {
+            const datas = await response.json();
+            console.log(datas);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }
 
     return(
@@ -13,7 +37,7 @@ export default function Register({}){
             <div className="w-1/2 flex flex-col items-center justify-center">
                 <div className="w-3/5">
                     <div className="text-[40px] text-[#33333]">
-                        Login in to FOLD
+                        Register to FOLD
                     </div>
                     <div className="text-[#888888] mt-[16px]">
                         See your growth finance here and let see your profit you get now
@@ -22,17 +46,17 @@ export default function Register({}){
                         <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="email">
                             Full name
                         </label>
-                        <input type="text" name="fullName" className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px] mb-[40px]" placeholder="John DOE" />
+                        <input ref={fullnameRef} type="text" name="fullName" className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px] mb-[40px]" placeholder="John DOE" />
 
-                        <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="email">
+                        <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="mail">
                             Email Address
                         </label>
-                        <input type="text" name="email" className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px] mb-[40px]" placeholder="john.doe@gmail.com" />
+                        <input ref={usernameRef} type="text" name="username" className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px] mb-[40px]" placeholder="john.doe@gmail.com" />
                         <div className="relative mb-[25px]">
                             <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="password">
                                 Password
                             </label>
-                            <input name="password" type={`${visibility ? "text" : "password"}`} className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px]" placeholder="john.doe@gmail.com" />
+                            <input ref={passwordRef} name="password" type={`${visibility ? "text" : "password"}`} className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px]" placeholder="john.doe@gmail.com" />
                             <div className="absolute right-[10px] bottom-[11px] cursor-pointer" onClick={() => {setVisibility(!visibility) }}>
                                 {visibility && 
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -55,7 +79,7 @@ export default function Register({}){
                             </div>
                             <Link className="text-[#7866D7] text-xs underline decoration-[#7866D7]" to="/forgot-password">Forgot password ?</Link>
                         </div>
-                        <button type="submit" className="w-full bg-[#7866D7] text-white h-[56px] rounded-md">Login</button>
+                        <button type="submit" className="w-full bg-[#7866D7] text-white h-[56px] rounded-md">Register</button>
                         <div className="text-[#888888] text-center mt-2">Already have an account ? Click <Link to="/" className="underline text-[#7866D7]">here</Link></div>
                     </form>
                     <div className="mt-30px relative text-center mt-[30px]">

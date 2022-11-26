@@ -1,6 +1,7 @@
 import Slider from "react-slick";
-import { HashLink as Link } from 'react-router-hash-link';
 import { useEffect, useState } from "react"
+import { HashLink as Link } from 'react-router-hash-link';
+import EventCard from "../elements/EventCard.tsx";
 
 export default function FoldEventSelection({}){
     const [appearing, setAppearing] = useState(false);
@@ -43,7 +44,7 @@ export default function FoldEventSelection({}){
     return(
         <div className={`${appearing ? "opacity-100" : "opacity-0"} w-full h-full bg-[#200E32] text-white pt-[70px] transition-opacity duration-500`}>
             {events.map((event) => {
-                return (<>{event}</>)
+                // return (<>{event}</>)
             })}
             <div className="w-full flex justify-between pl-[60px] pr-[120px] items-center mb-[90px]">
                 <img src="/logo.png" />
@@ -70,17 +71,9 @@ export default function FoldEventSelection({}){
                 <div className="pr-6 pl-6">
                     <Slider {...settings}>
                         {events.map(event => {
-                            return (<div className="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm dark:bg-gray-800 dark:border-gray-700">
-                                <Link to={{pathName: `/dashboard`, state: {address: event}}}>
-                                    <img className="rounded-t-lg" src="https://flowbite.com/docs/images/blog/image-1.jpg" alt="" />
-                                </Link>
-                                <div className="p-5">
-                                    <h5 className="text-gray-900 font-bold text-2xl tracking-tight mb-2 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                                    <p className="font-normal text-gray-700 mb-3 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                                        Read more
-                                        <svg className="-mr-1 ml-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-                                </div>
-                            </div>)
+                            return (
+                                <EventCard id={event}/>
+                            )
                         })}
                         
                     </Slider>

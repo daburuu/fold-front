@@ -204,6 +204,21 @@ export default function FoldForm({}){
     }
 
     function nextTab(){
+        if(tab == 1){
+            const dateString = `${year}-${month}-${day} ${hour}:${minute}`;
+            const timestamp = new Date(dateString).getTime()
+            if(timestamp / 1000 < Date.now() / 1000){
+                setTab1Errors({
+                    ...tab1Errors,
+                    day: true,
+                    month: true,
+                    year: true,
+                    hour: true,
+                    minute: true
+                });
+                return;
+            }
+        }
         setSwitching(true);
         setTimeout(() => {
             setTab(tab + 1);
@@ -223,37 +238,60 @@ export default function FoldForm({}){
     async function handleSubmit(event){
         event.preventDefault();
         nextTab();
+        const dateString = `${year}-${month}-${day} ${hour}:${minute}`;
+        const timestamp = new Date(dateString).getTime()
         const imagesFormData = new FormData();
 
-        images.forEach((image) => {
-            imagesFormData.append('eventImages', image);
-        });
+        // images.forEach((image) => {
+        //     imagesFormData.append('eventImages', image);
+        // });
 
-        const imagesResponse = await fetch("http://localhost:8080/api/saveImage", {
-            method: 'POST',
-            body: imagesFormData
-        });
+        // const imagesResponse = await fetch("http://localhost:8080/api/saveImage", {
+        //     method: 'POST',
+        //     body: imagesFormData
+        // });
 
-        setProgress(50);
+        // setProgress(50);
 
+        // const eventResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
+        //     method: 'POST',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         eventName: name,
+        //         eventDay: day,
+        //         eventMonth: month,
+        //         eventYear: year,
+        //         eventHour: hour,
+        //         eventMinute: minute,
+        //         eventAmount: amount,
+        //         eventTimestamp: timestamp,
+        //         eventCategories: categories
+        //     })
+        // });
 
-        const eventResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
-            method: 'POST',
+        // @TODO: SEND ACCOUNT INFORMATIONS TO CURRENT USER EMAIL
+
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/saveEvent`, {
+            method: "POST",
             headers: {
-                Accept: 'application/json',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                eventName: name,
-                eventDay: day,
-                eventMonth: month,
-                eventYear: year,
-                eventHour: hour,
-                eventMinute: minute,
-                eventAmount: amount,
-                eventCategories: categories
+                eventName: name
             })
-        });
+        })
+        .then(async (response) => {
+            const datas = await response.json();
+            console.log(datas);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+        // @TODO: ADD EVENT DATAS IN DATABASE
 
         setProgress(100);
         setCreated(true);
@@ -264,7 +302,7 @@ export default function FoldForm({}){
     }, [tab1Errors]);
 
     return (
-        <div className={`w-full h-full ${tab < 4 ? "bg-[#200E32]" : created ? "bg-[#85DBDB]" : "bg-[#8E71AC]"} pt-[30px] transition-opacity transition-colors duration-500 flex flex-col`}>
+        <div className={`overflow-y-hidden w-full h-full ${tab < 4 ? "bg-[#200E32]" : created ? "bg-[#85DBDB]" : "bg-[#8E71AC]"} pt-[30px] transition-opacity transition-colors duration-500 flex flex-col`}>
             {tab < 4 &&
                 <>
                     <div className="w-full flex justify-between pl-[60px] pr-[120px] items-center mb-[10px]">
@@ -272,7 +310,7 @@ export default function FoldForm({}){
                         <img src="/pp.png" className="rounded-full h-[75px]"/>
                     </div>
                     <div className="w-full px-[115px] pb-[45px] flex-1">
-                        <div className="w-full h-full bg-white rounded-[51px] flex flex-col px-[60px] py-[20px]">
+                        <div className="w-full h-full bg-white rounded-[51px] flex flex-col px-[60px] pt-[20px] max-h-full">
                             <div className="h-[15%] w-full text-center text-[20px]">
                                 <div className="mb-[20px] font-medium">
                                     {tab}/3
@@ -292,7 +330,7 @@ export default function FoldForm({}){
                                     </div>
                                 </div>
                             </div>
-                            <form onSubmit={handleSubmit} className="h-[70%] w-full">
+                            <form onSubmit={handleSubmit} className="h-[70%] w-full max-h-[70%] block">
                             { tab == 1 &&
                                 <div className={`flex h-full ${switching ? "opacity-0" : "opacity-100"} transition-opacity duration-250`}> 
                                     <div className="w-7/12 pr-[100px] py-[30px] h-full flex flex-col justify-between">
@@ -345,64 +383,66 @@ export default function FoldForm({}){
                                             }
                                         </div>
                                     </div>
-                                    <div className="w-5/12 pt-[30px] overflow-scroll max-h-full">
-                                        <table className="w-full max-h-full table-auto border-separate border-spacing-y-2">
-                                            <thead className="h-[40px] text-left">
-                                                <tr>
-                                                    <th className="px-[30px]">
-                                                        Nom de la catégorie
-                                                    </th>
-                                                    <th className="px-[30px]">
-                                                        Quantité
-                                                    </th>
-                                                    <th className="px-[30px]">
-                                                        Prix
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="">
-                                                {categories && 
-                                                    categories.map((category, index) => {
-                                                        return(
-                                                            <>
-                                                                <tr className="w-[90%] h-[65px]">
-                                                                    <td className="h-[65px] bg-[#F2F3F4] rounded-l-[16px] mt-2">
-                                                                        <input onChange={(e) => {setCategoryName(index, e)}} defaultValue={category.name} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
-                                                                    </td>
-                                                                    <td className="h-[65px] bg-[#F2F3F4]">
-                                                                        <input onChange={(e) => {setCategoryQuantity(index, e)}} defaultValue={category.quantity} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
-                                                                    </td>
-                                                                    <td className="h-[65px] bg-[#F2F3F4] rounded-r-[16px]">
-                                                                        <input onChange={(e) => {setCategoryPrice(index, e)}} defaultValue={category.price} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
-                                                                    </td>
-                                                                    {index == 0 &&
-                                                                        <td className="pl-2">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                                            </svg>
+                                    <div className="w-5/12 pt-[30px] max-h-full">
+                                        <div className="overflow-scroll h-[400px] relative">
+                                            <table className="w-full table-auto border-separate border-spacing-y-2">
+                                                <thead className="h-[40px] text-left sticky top-0 bg-white">
+                                                    <tr>
+                                                        <th className="pl-[30px]">
+                                                            Nom de la catégorie
+                                                        </th>
+                                                        <th className="pl-[30px]">
+                                                            Quantité
+                                                        </th>
+                                                        <th className="pl-[30px]">
+                                                            Prix
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="">
+                                                    {categories && 
+                                                        categories.map((category, index) => {
+                                                            return(
+                                                                <>
+                                                                    <tr className="w-[90%] h-[65px]">
+                                                                        <td className="h-[65px] bg-[#F2F3F4] rounded-l-[16px] mt-2">
+                                                                            <input onChange={(e) => {setCategoryName(index, e)}} defaultValue={category.name} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
                                                                         </td>
-                                                                    }
-                                                                    <td className="pl-2" onClick={() => { removeCategory(index) }}>
-                                                                        {index > 0 && 
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-red-600 cursor-pointer">
+                                                                        <td className="h-[65px] bg-[#F2F3F4]">
+                                                                            <input onChange={(e) => {setCategoryQuantity(index, e)}} defaultValue={category.quantity} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
+                                                                        </td>
+                                                                        <td className="h-[65px] bg-[#F2F3F4] rounded-r-[16px]">
+                                                                            <input onChange={(e) => {setCategoryPrice(index, e)}} defaultValue={category.price} type="text" className="bg-transparent w-full h-[65px] px-[30px] font-medium"></input>
+                                                                        </td>
+                                                                        {index == 0 &&
+                                                                            <td className="pl-2">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
                                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                                                 </svg>
+                                                                            </td>
                                                                         }
-                                                                    </td>
-                                                                </tr>
-                                                            </>
-                                                        );
-                                                    })
-                                                }
-                                            </tbody>
-                                        </table>
-                                        <div className="text-[8px] mt-[4px]">Ne peut pas depasser le nombre total de smart tickets</div>
-                                        <div className="w-full flex justify-center">
-                                            <button type="button" className="bg-[#8E71AC] text-white w-[58px] h-[54px] rounded-2xl text-[36px] flex items-center justify-center mr-[16px]" onClick={addCategory}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                                </svg>
-                                            </button>
+                                                                        <td className="pl-2" onClick={() => { removeCategory(index) }}>
+                                                                            {index > 0 && 
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-red-600 cursor-pointer">
+                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                                                    </svg>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                </>
+                                                            );
+                                                        })
+                                                    }
+                                                </tbody>
+                                            </table>
+                                            <div className="text-[8px] mt-[4px]">Ne peut pas depasser le nombre total de smart tickets</div>
+                                            <div className="w-full flex justify-center">
+                                                <button type="button" className="bg-[#8E71AC] text-white w-[58px] h-[54px] rounded-2xl text-[36px] flex items-center justify-center mr-[16px]" onClick={addCategory}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
