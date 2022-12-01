@@ -90,9 +90,9 @@ export default function FoldEventSelection({}){
                                             className="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100"
                                         >
                                             <p className="text-sm text-white">
-                                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis
-                                            perferendis hic asperiores quibusdam quidem voluptates doloremque
-                                            reiciendis nostrum harum. Repudiandae?
+                                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Omnis
+                                                perferendis hic asperiores quibusdam quidem voluptates doloremque
+                                                reiciendis nostrum harum. Repudiandae?
                                             </p>
                                         </div>
                                         </div>

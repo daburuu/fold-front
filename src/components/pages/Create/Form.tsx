@@ -269,7 +269,7 @@ export default function FoldForm({}){
             imagesFormData.append('eventImages', image);
         });
 
-        const imagesResponse = await fetch("http://localhost:8080/api/saveImage", {
+        const imagesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/saveImage`, {
             method: 'POST',
             body: imagesFormData
         });
