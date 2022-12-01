@@ -13,6 +13,7 @@ import FoldDashboard from './components/pages/Dashboard.tsx';
 import FoldTuto from './components/pages/Create/Tuto.tsx';
 import FoldForm from './components/pages/Create/Form.tsx';
 const FoldScanLogin = lazy(() => import('./components/pages/Scan/Login.tsx'));
+const FoldScanTicket = lazy(() => import('./components/pages/Scan/ScanTicket.tsx'));
 
 function App() {
   return (
@@ -30,8 +31,10 @@ function App() {
               {/* CREATION */}
               <Route element={<FoldTuto />} path="create-event"></Route>
               <Route element={<FoldForm />} path="form-create"></Route>
+
               {/* SCAN */}
               <Route element={<FoldScanLogin />} path="/scan-login"></Route>
+              <Route element={<FoldScanTicket />} path="/scan-ticket"></Route>
           </Routes>
         </Router>
       </Suspense>

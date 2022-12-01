@@ -21,12 +21,13 @@ export default function FoldScanLogin({}){
             })
         })
         .then(async (response) => {
-            const datas = await response.json();
+            const { datas } = await response.json();
             if(datas.error){
                 return;
             }
-            console.log(datas.datas);
-            localStorage.setItem("token", datas.datas.token);
+            localStorage.setItem("token", datas.token);
+            localStorage.setItem("username", datas.user.username);
+
             setConnected(true);
         })
         .catch((err) => {

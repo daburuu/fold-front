@@ -1,6 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Dropzone, { useDropzone } from 'react-dropzone';
 import { Link } from 'react-router-dom';
+
+const mapApiJs = 'https://maps.googleapis.com/maps/api/js';
+const apiKey = process.env.REACT_APP_GMAP_API_KEY;
+
+function loadAsyncScript(src) {
+    return new Promise(resolve => {
+        const script = document.createElement("script");
+        Object.assign(script, {
+            type: "text/javascript",
+            async: true,
+            src
+        });
+        script.addEventListener("load", () => resolve(script));
+        document.head.appendChild(script);
+    })
+}
 
 export default function FoldForm({}){
     const [tab, setTab] = useState(1);
@@ -38,6 +54,7 @@ export default function FoldForm({}){
         minute: false,
         images: false
     });
+    const addressRef = useRef(null);
 
     useDropzone({
         accept: {
@@ -165,6 +182,12 @@ export default function FoldForm({}){
         setAmount(amount);
     }
 
+    function setAddress(autocomplete){
+        const location = autocomplete.getPlace();
+        console.log(location);
+        // TODO: Do something with the address
+    }
+
     function setCategoryName(index, e){
         const currentCategory = categories[index];
         currentCategory.name = e.target.value;
@@ -242,35 +265,35 @@ export default function FoldForm({}){
         const timestamp = new Date(dateString).getTime()
         const imagesFormData = new FormData();
 
-        // images.forEach((image) => {
-        //     imagesFormData.append('eventImages', image);
-        // });
+        images.forEach((image) => {
+            imagesFormData.append('eventImages', image);
+        });
 
-        // const imagesResponse = await fetch("http://localhost:8080/api/saveImage", {
-        //     method: 'POST',
-        //     body: imagesFormData
-        // });
+        const imagesResponse = await fetch("http://localhost:8080/api/saveImage", {
+            method: 'POST',
+            body: imagesFormData
+        });
 
-        // setProgress(50);
+        setProgress(50);
 
-        // const eventResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         eventName: name,
-        //         eventDay: day,
-        //         eventMonth: month,
-        //         eventYear: year,
-        //         eventHour: hour,
-        //         eventMinute: minute,
-        //         eventAmount: amount,
-        //         eventTimestamp: timestamp,
-        //         eventCategories: categories
-        //     })
-        // });
+        const eventResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                eventName: name,
+                eventDay: day,
+                eventMonth: month,
+                eventYear: year,
+                eventHour: hour,
+                eventMinute: minute,
+                eventAmount: amount,
+                eventTimestamp: timestamp,
+                eventCategories: categories
+            })
+        });
 
         // @TODO: SEND ACCOUNT INFORMATIONS TO CURRENT USER EMAIL
 
@@ -297,8 +320,26 @@ export default function FoldForm({}){
         setCreated(true);
     }
 
+    const initMapScript = () => {
+        if(window.google){
+            return Promise.resolve();
+        }
+
+        const src = `${mapApiJs}?key=${apiKey}&libraries=places&v=weekly`;
+        return loadAsyncScript(src);
+    };
+
+    const initAutocomplete = () => {
+        if(!addressRef.current) return;
+
+        const autocomplete = new window.google.maps.places.Autocomplete(addressRef.current);
+        autocomplete.setFields(["address_component", "geometry"]);
+        autocomplete.addListener("place_changed", () => setAddress(autocomplete));
+
+    }
+
     useEffect(() => {
-        console.log(tab1Errors);
+        initMapScript().then(() => initAutocomplete())
     }, [tab1Errors]);
 
     return (
@@ -345,7 +386,7 @@ export default function FoldForm({}){
                                         </div>
                                         <div className="mb-[10px]">
                                             <label className="mb-[15px] block font-medium">Adresse</label>
-                                            <input type="text" className={`border-2 border-transparent px-[30px] font-medium block w-5/6 bg-[#F2F3F4] h-[59px] rounded-[16px]`}/>
+                                            <input ref={addressRef} type="text" className={`border-2 border-transparent px-[30px] font-medium block w-5/6 bg-[#F2F3F4] h-[59px] rounded-[16px]`}/>
                                         </div>
                                         <div className="mb-[10px] relative">
                                             <label className="mb-[15px] block font-medium w-full" htmlFor="day">Date</label>
