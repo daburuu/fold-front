@@ -2,19 +2,31 @@
 // @ts-ignore
 
 import Sidebar from "../elements/Sidebar.tsx";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function Dashboard({}) {
     const location = useLocation();
     const address = location.state?.address;
-
+    const navigate = useNavigate();
     console.log(address);
+    
+    if(!address){
+        navigate('/event-selection');
+    }
+
     return (
         <div className={`px-[24px] py-[29px] flex w-full h-full`}>
             <Sidebar active="home"></Sidebar>
-            <div className="flex-1 pt-[67px] pr-[42px] flex-col flex">
+            <div className="flex-1 pt-[20px] pr-[42px] flex-col flex">
                 <div className="flex justify-between">
-                    <div className="text-[24px] font-medium mb-[10px]">Accueil</div>
+                    <div className="flex">
+                        <div className="hover:scale-105 duration-200 cursor-pointer w-[36px] h-[36px] flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                        </div>
+                        <div className="text-[24px] font-medium mb-[10px]">Accueil</div>
+                    </div>
                     <div className="flex justify-between items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-[15px]">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -30,8 +42,8 @@ export default function Dashboard({}) {
                 <div className="text-[#9DAAB6]">Gérez votre évenement parfaitement </div>
 
                 <div className="w-full h-1/2 bg-[#7866d7] bg-opacity-[0.08] rounded-[12px] mt-[46px]">
-                    <div className="h-3/5 bg-red-600 rounded-t-[12px]">
-
+                    <div className="h-3/5 bg-[#ccc3f3] rounded-t-[12px] flex items-center justify-center">
+                        <div className="text-4xl">TUTO</div>
                     </div>
                     <div className="px-[40px]">
                         <div className="font-medium mt-[25px] mb-[25px]">
