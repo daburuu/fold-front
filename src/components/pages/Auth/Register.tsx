@@ -1,5 +1,11 @@
 import { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
+import { useAuthState } from "react-firebase-hooks/auth";
+import {
+    auth,
+    registerWithEmailAndPassword,
+    signInWithGoogle,
+  } from "../../../utils/firebase";
 
 export default function Register({}){
     const [visibility, setVisibility] = useState(false);
@@ -9,27 +15,30 @@ export default function Register({}){
 
     function handleSubmit(event){
         event.preventDefault();
-        // @TODO: API CALL /register
 
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                fullname: fullnameRef.current.value,
-                username: usernameRef.current.value,
-                password: passwordRef.current.value
-            })
-        })
-        .then(async (response) => {
-            const datas = await response.json();
-            console.log(datas);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+        registerWithEmailAndPassword(fullnameRef.current.value, usernameRef.current.value, passwordRef.current.value);
+
+
+
+        // fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {
+        //     method: "POST",
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         fullname: fullnameRef.current.value,
+        //         username: usernameRef.current.value,
+        //         password: passwordRef.current.value
+        //     })
+        // })
+        // .then(async (response) => {
+        //     const datas = await response.json();
+        //     console.log(datas);
+        // })
+        // .catch((err) => {
+        //     console.log(err);
+        // })
     }
 
     return(
