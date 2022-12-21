@@ -15,7 +15,7 @@ import {
     where,
     addDoc
 } from "firebase/firestore";
-
+import { ethers } from "ethers";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -62,28 +62,33 @@ const signInWithGoogle = async () => {
 
 const logInWithEmailAndPassword = async (email, password) => {
     try {
-      const test = await signInWithEmailAndPassword(auth, email, password);
-      console.log(test);
-      return ({error: null, datas: test})
+      const login = await signInWithEmailAndPassword(auth, email, password);
+      return ({error: null, datas: login});
     } catch (err) {
-      console.error(err);
+      alert(err.message);
       return ({error: "User not found.", datas: null})
     }
   };
 
 const registerWithEmailAndPassword = async (name, email, password) => {
     try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      const user = res.user;
-      await addDoc(collection(db, "users"), {
-        uid: user.uid,
-        name,
-        authProvider: "local",
-        email,
-      });
+        const wallet = ethers.Wallet.createRandom();
+        const phrase = wallet.mnemonic.phrase;
+        const address = wallet.address;
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        const user = res.user;
+        const register = await addDoc(collection(db, "users"), {
+            uid: user.uid,
+            name,
+            authProvider: "local",
+            email,
+            phrase: phrase,
+            address: address
+        });
+        return ({error: null, datas: register});
     } catch (err) {
-      console.error(err);
-      alert(err.message);
+      console.log(err.message);
+      return ({error: "Can't register", datas: null})
     }
 };
 

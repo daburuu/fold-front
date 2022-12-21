@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Dropzone, { useDropzone } from 'react-dropzone';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import canvasPreview from '../../../utils/canvasPreview';
 import { useDebounceEffect } from '../../../utils/useDebounceEffect';
-
+import isAuthenticated from '../../../utils/isAuthenticated';
 const mapApiJs = 'https://maps.googleapis.com/maps/api/js';
 const apiKey = process.env.REACT_APP_GMAP_API_KEY;
 
@@ -23,6 +23,7 @@ function loadAsyncScript(src) {
 }
 
 export default function FoldForm({}){
+    const navigate = useNavigate();
     const [tab, setTab] = useState(1);
     const [switching, setSwitching] = useState(false);
     const [images, setImages] = useState([]);
@@ -414,6 +415,9 @@ export default function FoldForm({}){
     }
 
     useEffect(() => {
+        if(!isAuthenticated()){
+            navigate('/');
+        }
         initMapScript().then(() => initAutocomplete())
     }, [tab1Errors]);
 

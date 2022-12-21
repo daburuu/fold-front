@@ -2,11 +2,19 @@ import Slider from "react-slick";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { HashLink as Link } from 'react-router-hash-link';
+import { auth, logInWithEmailAndPassword, signInWithGoogle } from "../../utils/firebase.js";
+import isAuthenticated from "../../utils/isAuthenticated.js";
 
 export default function FoldEventSelection({}){
     const [appearing, setAppearing] = useState(false);
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!isAuthenticated()){
+            navigate('/');
+        }
+    });
 
     const settings = {
         dots: true,
@@ -26,7 +34,6 @@ export default function FoldEventSelection({}){
     });
 
     useEffect(() => {
-        console.log(localStorage.getItem("userAddress"));
         fetch(`${process.env.REACT_APP_BACKEND_URL}/getEvents`, {
             method: 'POST',
             headers: {

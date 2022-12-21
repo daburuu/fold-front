@@ -3,16 +3,23 @@
 
 import Sidebar from "../elements/Sidebar.tsx";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import isAuthenticated from "../../utils/isAuthenticated";
+import { useEffect } from "react";
 
 export default function Dashboard({}) {
     const location = useLocation();
     const address = location.state?.address;
     const navigate = useNavigate();
-    console.log(address);
-    
+
     if(!address){
         navigate('/event-selection');
     }
+
+    useEffect(() => {
+        if(!isAuthenticated()){
+            navigate('/');
+        }
+    });
 
     return (
         <div className={`px-[24px] py-[29px] flex w-full h-full`}>

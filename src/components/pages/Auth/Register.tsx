@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthState } from "react-firebase-hooks/auth";
 import {
     auth,
@@ -12,12 +12,21 @@ export default function Register({}){
     const fullnameRef = useRef(null);
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
+    const [registerError, setRegisterError] = useState(false);
+    const navigate = useNavigate();
 
-    function handleSubmit(event){
+    async function handleSubmit(event){
         event.preventDefault();
 
-        registerWithEmailAndPassword(fullnameRef.current.value, usernameRef.current.value, passwordRef.current.value);
-
+        const register = await registerWithEmailAndPassword(fullnameRef.current.value, usernameRef.current.value, passwordRef.current.value);
+        if (!register.error) {
+            navigate("/");
+        } else {
+            setRegisterError(true);
+            setTimeout(() => {
+                setRegisterError(false);
+            }, 2000);
+        }
 
 
         // fetch(`${process.env.REACT_APP_BACKEND_URL}/register`, {

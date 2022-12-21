@@ -1,7 +1,15 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import isAuthenticated from '../../../utils/isAuthenticated';
 
 export default function FoldTuto({}){
     const navigate = useNavigate();
+    
+    useEffect(() => {
+        if(!isAuthenticated()){
+            navigate('/');
+        }
+    });
 
     function skipTuto(){
         navigate('/form-create');

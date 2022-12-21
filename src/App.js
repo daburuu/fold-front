@@ -4,8 +4,11 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Navigate,
+  Link,
+  useLocation
 } from "react-router-dom";
+import { auth, logInWithEmailAndPassword, signInWithGoogle } from "./utils/firebase.js";
 import FoldEventSelection from './components/pages/EventSelection.tsx';
 import FoldLogin from './components/pages/Auth/Login.tsx';
 import FoldRegister from './components/pages/Auth/Register.tsx';
@@ -22,19 +25,21 @@ function App() {
         <Router>
           <Routes>
             {/* AUTH */}
-              <Route element={<FoldLogin />} path="/"></Route>
-              <Route element={<FoldRegister />} path="/register"></Route>
+            <Route element={<FoldLogin />} path="/" exact={true}></Route>
+            <Route element={<FoldRegister />} path="/register" exact={true}></Route>
 
-              <Route element={<FoldEventSelection />} path="event-selection"></Route>
-              <Route element={<FoldDashboard />} path="dashboard"></Route>
+            {/* DASHBOARD */}
+            <Route element={<FoldEventSelection />} path="event-selection"></Route>
+            <Route element={<FoldDashboard />} path="dashboard"></Route>
 
-              {/* CREATION */}
-              <Route element={<FoldTuto />} path="create-event"></Route>
-              <Route element={<FoldForm />} path="form-create"></Route>
+            {/* CREATION */}
+            <Route element={<FoldTuto />} path="create-event"></Route>
+            <Route element={<FoldForm />} path="form-create"></Route>
 
-              {/* SCAN */}
-              <Route element={<FoldScanLogin />} path="/scan-login"></Route>
-              <Route element={<FoldScanTicket />} path="/scan-ticket"></Route>
+            {/* SCAN */}
+            <Route element={<FoldScanLogin />} path="/scan-login"></Route>
+            <Route element={<FoldScanTicket />} path="/scan-ticket"></Route>
+
           </Routes>
         </Router>
       </Suspense>

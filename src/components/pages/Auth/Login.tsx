@@ -1,8 +1,9 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, logInWithEmailAndPassword, signInWithGoogle } from "../../../utils/firebase.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReCAPTCHA from "react-google-recaptcha";
+import isAuthenticated from "../../../utils/isAuthenticated.js";
 
 export default function Login({}){
     const [visibility, setVisibility] = useState(false);
@@ -13,24 +14,25 @@ export default function Login({}){
 
     const navigate = useNavigate();
     
+    console.log(isAuthenticated());
     async function handleSubmit(event){
         event.preventDefault();
 
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-        const test = await logInWithEmailAndPassword(email, password);
+        const login = await logInWithEmailAndPassword(email, password);
 
-        if(!test.error){
-            let response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getUserAddress`, {
-                method: 'POST'
-            });
-            response = await response.json();
-            if(response['error']){
-                // @TODO: handle error
-            }
-            
-            localStorage.setItem("userAddress", response['datas']);
-            
+        if(!login.error){
+            // let response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getUserAddress`, {
+            //     method: 'POST'
+            // });
+            // response = await response.json();
+            // if(response['error']){
+            //     // @TODO: handle error
+            // }
+
+            localStorage.setItem("userAddress", login.datas._tokenResponse.refreshToken);
+
             setSwitching(true);
             setTimeout(() => {
                 navigate('/event-selection');
