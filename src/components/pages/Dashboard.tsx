@@ -8,14 +8,14 @@ import { useEffect } from "react";
 
 export default function Dashboard({}) {
     const location = useLocation();
-    const address = location.state?.address;
+    const event = location.state?.event;
     const navigate = useNavigate();
 
-    if(!address){
-        navigate('/event-selection');
-    }
-
     useEffect(() => {
+        if(!event){
+            navigate('/event-selection');
+        }
+    
         if(!isAuthenticated()){
             navigate('/');
         }
@@ -23,7 +23,9 @@ export default function Dashboard({}) {
 
     return (
         <div className={`px-[24px] py-[29px] flex w-full h-full`}>
-            <Sidebar active="home"></Sidebar>
+            { event && 
+                <Sidebar active="home" event={event}></Sidebar>
+            }
             <div className="flex-1 pt-[20px] pr-[42px] flex-col flex">
                 <div className="flex justify-between">
                     <div className="flex">

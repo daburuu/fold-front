@@ -11,6 +11,7 @@ import {
     getFirestore,
     query,
     getDocs,
+    getDoc,
     collection,
     where,
     addDoc
@@ -61,49 +62,55 @@ const signInWithGoogle = async () => {
 };
 
 const logInWithEmailAndPassword = async (email, password) => {
-    try {
-      const login = await signInWithEmailAndPassword(auth, email, password);
-      return ({error: null, datas: login});
-    } catch (err) {
-      alert(err.message);
-      return ({error: "User not found.", datas: null})
-    }
-  };
+  try {
+    const login = await signInWithEmailAndPassword(auth, email, password);
+    return ({error: null, datas: login});
+  } catch (err) {
+    alert(err.message);
+    return ({error: "User not found.", datas: null})
+  }
+};
 
 const registerWithEmailAndPassword = async (name, email, password) => {
-    try {
-        const wallet = ethers.Wallet.createRandom();
-        const phrase = wallet.mnemonic.phrase;
-        const address = wallet.address;
-        const res = await createUserWithEmailAndPassword(auth, email, password);
-        const user = res.user;
-        const register = await addDoc(collection(db, "users"), {
-            uid: user.uid,
-            name,
-            authProvider: "local",
-            email,
-            phrase: phrase,
-            address: address
-        });
-        return ({error: null, datas: register});
-    } catch (err) {
-      console.log(err.message);
-      return ({error: "Can't register", datas: null})
-    }
+  try {
+      const wallet = ethers.Wallet.createRandom();
+      const phrase = wallet.mnemonic.phrase;
+      const address = wallet.address;
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      const user = res.user;
+      const register = await addDoc(collection(db, "users"), {
+          uid: user.uid,
+          name,
+          authProvider: "local",
+          email,
+          phrase: phrase,
+          address: address
+      });
+      return ({error: null, datas: register});
+  } catch (err) {
+    console.log(err.message);
+    return ({error: "Can't register", datas: null})
+  }
 };
 
 const sendPasswordReset = async (email) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
-      alert("Password reset link sent!");
-    } catch (err) {
-      console.error(err);
-      alert(err.message);
-    }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset link sent!");
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
 };
 
 const logout = () => {
-    signOut(auth);
+  signOut(auth);
+};
+
+const getAddressByEmail = async (email) => {
+  const q = query(collection(db, "users"), where("email", "==", email));
+  const docs = await getDocs(q);
+  return docs;
 };
 
 export {
@@ -114,4 +121,5 @@ export {
     registerWithEmailAndPassword,
     sendPasswordReset,
     logout,
+    getAddressByEmail
 };

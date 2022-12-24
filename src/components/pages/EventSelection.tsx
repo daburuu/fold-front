@@ -2,19 +2,15 @@ import Slider from "react-slick";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { HashLink as Link } from 'react-router-hash-link';
-import { auth, logInWithEmailAndPassword, signInWithGoogle } from "../../utils/firebase.js";
+import { auth } from "../../utils/firebase.js";
 import isAuthenticated from "../../utils/isAuthenticated.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function FoldEventSelection({}){
     const [appearing, setAppearing] = useState(false);
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if(!isAuthenticated()){
-            navigate('/');
-        }
-    });
 
     const settings = {
         dots: true,
@@ -26,14 +22,14 @@ export default function FoldEventSelection({}){
     };
 
     async function handleClick(event){
-        navigate('/dashboard', {state: {address: event}});
+        navigate('/dashboard', {state: {event: event}});
     }
 
     useEffect(() => {
+        if(!isAuthenticated()){
+            navigate('/');
+        }
         setAppearing(true);
-    });
-
-    useEffect(() => {
         fetch(`${process.env.REACT_APP_BACKEND_URL}/getEvents`, {
             method: 'POST',
             headers: {
@@ -44,17 +40,34 @@ export default function FoldEventSelection({}){
                 account: localStorage.getItem("userAddress"),
             })
         }).then(async (response) => {
-            const datas = await response.json();
-            if(datas.error){
-                // @TODO: HANDLE ERROR
+            const {error, datas} = await response.json();
+            if(error){
+                toast.error("Error", {
+                    position: toast.POSITION.TOP_CENTER
+                });
             }
-            console.log(datas);
-            setEvents(datas.datas);
+            var events = [];
+
+            datas.forEach((event: any) => {
+                const [entry]: any = Object.entries(event);
+                console.log(entry);
+                events.push({
+                    id: entry[0],
+                    address: entry[1].address,
+                    image: `${process.env.REACT_APP_ASSETS_URL}/${localStorage.getItem("userAddress")}/${entry[0]}/0/${entry[1].image}`,
+                    name: entry[1].name,
+                    location: entry[1].location
+                });
+            });
+
+            setEvents(events);
         })
-    }, [])
+    }, []);
+
 
     return(
         <div className={`${appearing ? "opacity-100" : "opacity-0"} w-full h-full bg-[#200E32] text-white pt-[70px] transition-opacity duration-500`}>
+            <ToastContainer theme="dark" />
             <div className="w-full flex justify-between pl-[60px] pr-[120px] items-center mb-[90px]">
                 <img src="/logo.png" />
                 <img src="/pp.png" className="rounded-full h-[75px]"/>
@@ -67,7 +80,7 @@ export default function FoldEventSelection({}){
                         </svg>
                         <input className="inline bg-transparent text-[#92929D] text-[20px]" placeholder="Search Something..." type="text"></input>
                     </div>
-                    {/* TODO: Once we have the tutorial video, change path to create-event */}
+
                     <Link to="/create-event" className="text-white flex items-center">
                         <span className="text-white text-[24px] mr-4 font-bold">Créer un nouvel événement</span>
                         <button className="bg-[#8E71AC] text-white w-[58px] h-[54px] rounded-2xl text-[36px] flex items-center justify-center mr-[16px]">
@@ -75,26 +88,29 @@ export default function FoldEventSelection({}){
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                         </button>
-                        
                     </Link>
+
                 </div>
-                <div className="pr-6 pl-6">
+                <div className="px-24">
                     <Slider {...settings}>
                         {events.map(event => {
                             return (
-                                <div className="cursor-pointer group relative block bg-black" onClick={() => {handleClick(event)}}>
+                                <div className="cursor-pointer group relative block bg-black rounded-[21px] overflow-hidden" onClick={() => {handleClick(event)}}>
                                     <img
                                         alt="Developer"
-                                        src="https://images.unsplash.com/photo-1603871165848-0aa92c869fa1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=772&q=80"
+                                        src={event.image}
                                         className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
                                     />
 
-                                    <div className="relative p-8">
-                                        <p className="text-sm font-medium uppercase tracking-widest text-[#8E71AC]">
-                                            Developer
-                                        </p>
+                                    <div className="relative p-8 h-full">
+                                        <div className="h-2/5 bg-red-600 w-full absolute bottom-0 left-0">
+                                            <p className="text-sm font-medium uppercase tracking-widest text-[#8E71AC]">
+                                                {event.location ? event.location : "No location"}
+                                            </p>
+                                        </div>
+                                        
 
-                                        <p className="text-2xl font-bold text-white uppercase">Event name</p>
+                                        <p className="text-2xl font-bold text-white uppercase">{event.name}</p>
 
                                         <div className="mt-64">
                                         <div

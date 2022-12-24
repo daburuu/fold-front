@@ -74,7 +74,7 @@ export default function Register({}){
                             <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="password">
                                 Password
                             </label>
-                            <input ref={passwordRef} name="password" type={`${visibility ? "text" : "password"}`} className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px]" placeholder="john.doe@gmail.com" />
+                            <input ref={passwordRef} name="password" type={`${visibility ? "text" : "password"}`} className="border border-[#0F0D23] w-full rounded-md h-[48px] px-[16px] py-[14px]" placeholder="******" />
                             <div className="absolute right-[10px] bottom-[11px] cursor-pointer" onClick={() => {setVisibility(!visibility) }}>
                                 {visibility && 
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

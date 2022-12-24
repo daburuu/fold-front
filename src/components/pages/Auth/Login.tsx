@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, logInWithEmailAndPassword, signInWithGoogle } from "../../../utils/firebase.js";
+import { auth, logInWithEmailAndPassword, signInWithGoogle, getAddressByEmail } from "../../../utils/firebase.js";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ReCAPTCHA from "react-google-recaptcha";
 import isAuthenticated from "../../../utils/isAuthenticated.js";
@@ -30,8 +30,11 @@ export default function Login({}){
             // if(response['error']){
             //     // @TODO: handle error
             // }
+            const docSnap = await getAddressByEmail(email);
+            const datas = docSnap.docs[0].data();
 
-            localStorage.setItem("userAddress", login.datas._tokenResponse.refreshToken);
+            localStorage.setItem("userAddress", datas.address);
+            localStorage.setItem("authToken", login.datas._tokenResponse.refreshToken);
 
             setSwitching(true);
             setTimeout(() => {

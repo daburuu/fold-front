@@ -333,27 +333,31 @@ export default function FoldForm({}){
         event.preventDefault();
         nextTab();
         const dateString = `${year}-${month}-${day} ${hour}:${minute}`;
-        const timestamp = new Date(dateString).getTime()
+        const timestamp = new Date(dateString).getTime();
 
         setProgress(50);
 
-        // const eventResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
-        //     method: 'POST',
-        //     headers: {
-        //         Accept: 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         eventName: name,
-        //         eventAddress: address,
-        //         eventAmount: amount,
-        //         eventTimestamp: timestamp,
-        //         eventScanStart: scanStart,
-        //         eventCategories: categories
-        //     })
-        // });
-
-        // @TODO: SEND ACCOUNT INFORMATIONS TO CURRENT USER EMAIL
+        const eventAddress = await fetch(`${process.env.REACT_APP_BACKEND_URL}/generateTickets`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                eventOwner: localStorage.getItem("userAddress"),
+                eventName: name,
+                eventAddress: address,
+                eventAmount: amount,
+                eventTimestamp: timestamp,
+                eventScanStart: scanStart,
+                eventCategories: categories
+            })
+        }).then(async (response) => {
+            const json = await response.json();
+            return json.datas;
+        });
+        
+        console.log("[INFO] Saved on blockchain");
 
         const eventDatas = await fetch(`${process.env.REACT_APP_BACKEND_URL}/saveEvent`, {
             method: "POST",
@@ -363,7 +367,10 @@ export default function FoldForm({}){
             },
             body: JSON.stringify({
                 userAddress: localStorage.getItem("userAddress"),
-                eventName: name
+                eventName: name,
+                eventAddress: eventAddress,
+                image: images[0][0].name,
+                eventLocation: address
             })
         })
         .then(async (response) => {
@@ -373,6 +380,8 @@ export default function FoldForm({}){
         .catch((err) => {
             console.log(err);
         });
+
+        console.log("[INFO] Saved on Database");
 
         console.log(eventDatas);
         // @TODO: ADD EVENT DATAS IN DATABASE
@@ -392,6 +401,8 @@ export default function FoldForm({}){
             method: 'POST',
             body: imagesFormData
         });
+
+        console.log("[INFO] Images saved");
 
         setProgress(100);
         setCreated(true);
@@ -659,7 +670,6 @@ export default function FoldForm({}){
                                                         handleDrop(acceptedFiles, 0);
                                                     }}
                                                     multiple={false}
-                                                    accept="image/*"
                                                 >
                                                     {({getRootProps, getInputProps}) => (
                                                         <div {...getRootProps({className: 'bg-[#FFFFFF] p-[20px] text-[#FFFFF] h-[150px] cursor-pointer'})}>
