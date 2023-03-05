@@ -51,9 +51,9 @@ export default function Register({}){
     }
 
     return(
-        <div className={`flex h-full transition-opacity duration-500`}>
-            <div className="w-1/2 flex flex-col items-center justify-center">
-                <div className="w-3/5">
+        <div className={`flex-none w:flex h-full transition-opacity duration-500`}>
+            <div className="w-full md:w-1/2 flex flex-col items-center justify-center">
+                <div className="w-[80%] md:w-3/5">
                     <div className="text-[40px] text-[#33333]">
                         Register to FOLD
                     </div>
@@ -109,7 +109,7 @@ export default function Register({}){
                 </div>
             </div>
 
-            <div className="w-1/2 h-full bg-[#200E32] flex flex-col items-center">
+            <div className="hidden md:block w-1/2 h-full bg-[#200E32] flex flex-col items-center">
                 <div className="w-full flex justify-center pt-[106px]">
                     <img src={"/logo.png"} className="w-[225px]"/> 
                     {/* FONT FOR LOGO: ARIMO */}

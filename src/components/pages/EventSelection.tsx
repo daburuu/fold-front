@@ -66,14 +66,14 @@ export default function FoldEventSelection({}){
 
 
     return(
-        <div className={`${appearing ? "opacity-100" : "opacity-0"} w-full h-full bg-[#200E32] text-white pt-[70px] transition-opacity duration-500`}>
+        <div className={`${appearing ? "opacity-100" : "opacity-0"} w-full h-full min-h-[100vh] bg-[#11021A] text-white pt-5 md:pt-[70px] transition-opacity duration-500`}>
             <ToastContainer theme="dark" />
-            <div className="w-full flex justify-between pl-[60px] pr-[120px] items-center mb-[90px]">
+            <div className="w-full flex justify-between pl-[60px] pr-[120px] items-center mb-5">
                 <img src="/logo.png" />
                 <img src="/pp.png" className="rounded-full h-[75px]"/>
             </div>
             <div>
-                <div className="flex justify-between px-[120px] mb-[60px]">
+                <div className="flex justify-between px-2 md:px-[120px] mb-[60px]">
                     <div className="relative flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 w-6 h-6 vertical-center opacity-50 inline">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -103,7 +103,7 @@ export default function FoldEventSelection({}){
                                     />
 
                                     <div className="relative p-8 h-full">
-                                        <div className="h-2/5 bg-red-600 w-full absolute bottom-0 left-0">
+                                        <div className="h-2/5 w-full absolute bottom-0 left-0">
                                             <p className="text-sm font-medium uppercase tracking-widest text-[#8E71AC]">
                                                 {event.location ? event.location : "No location"}
                                             </p>

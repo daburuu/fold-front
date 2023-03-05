@@ -22,7 +22,7 @@ const FoldScanTicket = lazy(() => import('./components/pages/Scan/ScanTicket.tsx
 
 function App() {
   return (
-    <div className="App h-[100vh] w-full">
+    <div className="App h-screen w-full overflow-hidden">
       <Suspense fallback={<></>}>
         <Router>
           <Routes>

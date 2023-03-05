@@ -53,9 +53,9 @@ export default function Login({}){
     }
     
     return (
-        <div className={`flex h-full ${switching ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}>
-            <div className="w-1/2 flex flex-col items-center justify-center">
-                <div className="w-3/5">
+        <div className={`bg-[#11021A] flex-none md:flex h-full ${switching ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}>
+            <div className="md:w-1/2 w-full items-center justify-center h-full">
+                <div className="p-10 w-4/5 mx-auto h-50vh">
                     <div className="text-[40px] text-[#33333]">
                         Login in to FOLD
                     </div>
@@ -63,10 +63,6 @@ export default function Login({}){
                         See your growth finance here and let see your profit you get now
                     </div>
                     <form onSubmit={handleSubmit} className="mt-[40px]">
-                        {/* <label className="text-xs text-[#020614]" htmlFor="fullName">
-                            Full name
-                        </label>
-                        <input type="text" placeholder="John DOE"/> */}
                         <label className="text-xs text-[#020614] block mb-[12px] opacity-50" htmlFor="email">
                             Email Address
                         </label>
@@ -98,10 +94,6 @@ export default function Login({}){
                             </div>
                             <Link className="text-[#7866D7] text-xs underline decoration-[#7866D7]" to="/forgot-password">Forgot password ?</Link>
                         </div>
-                        {/* <ReCAPTCHA
-                            sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-                            onChange={onChange}
-                        /> */}
                         <div className="relative">
                             {loginError && 
                                 <div className="text-red-600 text-center absolute top-[-25px] left-[50%] -translate-x-1/2">
@@ -127,19 +119,9 @@ export default function Login({}){
                 </div>
             </div>
 
-            <div className="w-1/2 h-full bg-[#200E32] flex flex-col items-center">
-                <div className="w-full flex justify-center pt-[106px]">
-                    <img src={"/logo.png"} className="w-[225px]"/> 
-                    {/* FONT FOR LOGO: ARIMO */}
-                </div>
-                <div className="flex justify-center items-center flex-col">
-                    <img src={"/peace.png"} className="w-full"/>
-                    <div className="text-white text-[32px] w-2/5 text-center">
-                        Bienvenue dans le créateur de SmartTicket FOLD 
-                    </div>
-                </div>
-
+            <div className="w-1/2 h-full bg-[#200E32] flex flex-col items-center hidden md:block">
             </div>
+
         </div>
     )
     
