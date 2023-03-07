@@ -80,6 +80,7 @@ export default function FoldForm({}){
     const [scale, setScale] = useState(1);
     const [categorySelected, setCategorySelected] = useState(0);
     const [visualDates, setVisualDates] = useState({});
+    const [eventVisual, setEventVisual] = useState(null);
 
     useDropzone({
         accept: {
@@ -267,9 +268,11 @@ export default function FoldForm({}){
     }
 
     function nextTab(){
+
         if(tab == 1){
             const dateString = `${year}-${month}-${day} ${hour}:${minute}`;
-            const timestamp = new Date(dateString).getTime()
+            const timestamp = new Date(dateString).getTime();
+
             if(timestamp / 1000 < Date.now() / 1000){
                 setTab1Errors({
                     ...tab1Errors,
@@ -295,7 +298,6 @@ export default function FoldForm({}){
             setTab(tab + 1);
             setSwitching(false);
         }, 250);
-
     }
 
     function handleDrop(acceptedFiles, index){
@@ -305,6 +307,7 @@ export default function FoldForm({}){
         const [image] = acceptedFiles;
         setCurrentImgSrc(URL.createObjectURL(image));
         let newFiles = images;
+
         if(!newFiles[categorySelected]){
             newFiles[categorySelected] = [];
         }
@@ -374,6 +377,7 @@ export default function FoldForm({}){
 
     async function handleSubmit(event){
         event.preventDefault();
+
         nextTab();
         const dateString = `${year}-${month}-${day} ${hour}:${minute}`;
         const timestamp = new Date(dateString).getTime();
@@ -394,6 +398,7 @@ export default function FoldForm({}){
                 eventTimestamp: timestamp,
                 eventScanStart: scanStart,
                 eventCategories: categories,
+                eventVisual: eventVisual.name
             })
         }).then(async (response) => {
             const json = await response.json();
@@ -450,7 +455,8 @@ export default function FoldForm({}){
                 imagesFormData.append(`${index}`, image);
             })
         });
-
+        imagesFormData.append('eventVisual', eventVisual);
+        
         const imagesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/saveImage`, {
             method: 'POST',
             body: imagesFormData
@@ -515,7 +521,7 @@ export default function FoldForm({}){
 
     return (
         <div className={`overflow-y-hidden w-full h-screen ${tab < 4 ? "bg-[#200E32]" : created ? "bg-[#85DBDB]" : "bg-[#8E71AC]"} pt-[30px] transition-opacity transition-colors duration-500 flex flex-col`}>
-            <canvas id="gradient-canvas" data-transition-in />
+            {/* <canvas id="gradient-canvas" data-transition-in /> */}
             {tab < 4 &&
                 <>
                     <div className="w-full px-[115px] pb-[45px] flex-1">
@@ -616,14 +622,24 @@ export default function FoldForm({}){
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mb-[10px] relative">
-                                            <label className="mb-[15px] block font-medium" htmlFor="amount">Nombre de SmartTickets</label>
-                                            <input name="amount" id="amount" onBlur={() => {setTouched({...touched, amount: true})}} onChange={(e) => { setEventAmount(parseInt(e.target.value)) }} type="text" className={`border-2 border-transparent px-[30px] font-medium block w-1/6 bg-[#F2F3F4] h-[59px] rounded-[16px] ${tab1Errors.amount && touched.amount ? "!border-red-600" : ""}`}/>
-                                            {(tab1Errors.amount && touched.amount) &&
-                                                <div className="text-red-600 text-xs absolute top-[20px]">
-                                                   Le montant entré est incorrect
-                                                </div>
-                                            }
+                                        <div className="flex">
+                                            <div className="mb-[10px] relative w-1/2">
+                                                <label className="mb-[15px] block font-medium" htmlFor="amount">Nombre de SmartTickets</label>
+                                                <input name="amount" id="amount" onBlur={() => {setTouched({...touched, amount: true})}} onChange={(e) => { setEventAmount(parseInt(e.target.value)) }} type="text" className={`border-2 border-transparent px-[30px] font-medium block w-1/3 bg-[#F2F3F4] h-[59px] rounded-[16px] ${tab1Errors.amount && touched.amount ? "!border-red-600" : ""}`}/>
+                                                {(tab1Errors.amount && touched.amount) &&
+                                                    <div className="text-red-600 text-xs absolute top-[20px]">
+                                                    Le montant entré est incorrect
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div className="w-1/2">
+                                                <label className="mb-[15px] block font-medium" htmlFor="amount">Visuel de l'évènement</label>
+                                                {eventVisual &&
+                                                    <img className="max-h-[100px]" src={URL.createObjectURL(eventVisual)} />
+                                                }
+                                                <input type="file" accept="image/*" onChange={(e) => setEventVisual(e.target.files[0])} />
+
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="w-5/12 pt-[30px] max-h-full">
@@ -688,11 +704,10 @@ export default function FoldForm({}){
                                     </div>
                                 </div>
                             }
-
                             { tab == 2 && 
                                 <div className={`flex h-full ${switching ? "opacity-0" : "opacity-100"} transition-opacity duration-250 w-3/4 mx-auto flex-col`}>
                                     
-                                    <div className="flex flex-1">
+                                    <div className="flex flex-1 relative">
                                         <div className="w-1/4 h-full pt-12 mr-12">
                                             <div className="pl-4 font-medium">
                                                 SmartTicket Design
@@ -782,17 +797,17 @@ export default function FoldForm({}){
                             }
                                 <div className="h-[15%] w-full flex items-center justify-end">
                                     {tab == 1 && 
-                                        <button type="button" disabled={Object.values(tab1Errors).includes(true)} onClick={nextTab} className="text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
+                                        <button type="button" disabled={Object.values(tab1Errors).includes(true)} onClick={nextTab} className="relative text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
                                             Passer à l'étape suivante
                                         </button>
                                     }
                                     {tab == 2 && 
-                                        <button type="button" disabled={Object.values(tab2Errors).includes(true)} onClick={nextTab} className="text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
+                                        <button type="button" disabled={Object.values(tab2Errors).includes(true)} onClick={nextTab} className="relative text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
                                             Passer à l'étape suivante
                                         </button>
                                     }
                                     {tab == 3 && 
-                                        <button type="submit" className="text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
+                                        <button type="submit" className="relative text-white text-[18px] bg-[#8E71AC] rounded-[9px] h-[80%] w-[300px] font-medium disabled:opacity-75">
                                             Générer mes tickets
                                         </button>
                                     }

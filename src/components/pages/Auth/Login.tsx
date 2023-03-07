@@ -33,6 +33,7 @@ export default function Login({}){
             const docSnap = await getAddressByEmail(email);
             const datas = docSnap.docs[0].data();
 
+            console.log(datas);
             localStorage.setItem("userAddress", datas.address);
             localStorage.setItem("authToken", login.datas._tokenResponse.refreshToken);
 
